@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Novo Período</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="box">
+    <h1>Novo Período</h1>
+    <form>
+      <label for="turma">Turma:</label>
+      <select id="turma" required>
+        <option value="">Selecione uma turma</option>
+      </select>
+
+      <p>Curso: <span id="curso-nome">Selecionar turma</span></p>
+
+      <label for="nome">Nome do Período:</label>
+      <input type="text" id="nome" required />
+
+      <div class="botoes">
+        <button type="submit">Salvar</button>
+        <button type="button" onclick="window.location.href='index.html'">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</body>
+<script src="formulario.js"></script>
+</html>
