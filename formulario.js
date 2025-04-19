@@ -1,58 +1,83 @@
 window.onload = function () {
-  const cursosSalvos = JSON.parse(localStorage.getItem('controlePeriodos')) || [];
-  const selectTurmas = document.getElementById('turma');
-  const spanCurso = document.getElementById('curso-nome');
+  const selectCurso = document.getElementById("curso");
+  const selectTurma = document.getElementById("turma");
+  const inputNomePeriodo = document.getElementById("nome");
 
-  // Preenche o select com as turmas disponíveis
-  cursosSalvos.forEach(curso => {
-    curso.turmas.forEach(turma => {
-      const option = document.createElement('option');
-      option.value = `${curso.curso}|${curso.ano}|${turma.nome}`; // curso, ano e nome da turma
-      option.textContent = turma.nome;
-      selectTurmas.appendChild(option);
-    });
+  const cursos = JSON.parse(localStorage.getItem("controlePeriodos")) || [];
+  const turmas = JSON.parse(localStorage.getItem("turmas")) || [];
+
+  // Preencher o select de cursos
+  cursos.forEach((curso, index) => {
+    const option = document.createElement("option");
+    option.value = index; // usaremos o índice para identificar depois
+    option.textContent = `${curso.curso} (${curso.ano})`;
+    selectCurso.appendChild(option);
   });
 
-  // Atualiza o nome do curso ao selecionar a turma
-  selectTurmas.addEventListener('change', function () {
-    const valorSelecionado = this.value;
-    if (valorSelecionado) {
-      const [nomeCurso, anoCurso] = valorSelecionado.split('|');
-      spanCurso.textContent = `${nomeCurso} (${anoCurso})`;
-    } else {
-      spanCurso.textContent = 'Selecionar turma';
-    }
+  // Preencher o select de turmas
+  turmas.forEach((turma) => {
+    const option = document.createElement("option");
+    option.value = turma.nome;
+    option.textContent = turma.nome;
+    selectTurma.appendChild(option);
   });
 
-  // Lógica de salvar período
-  document.querySelector("form").addEventListener("submit", function (e) {
-    e.preventDefault();
+  // Lógica para editar período
+  const editarCursoIndex = localStorage.getItem('editarCursoIndex');
+  const editarPeriodoIndex = localStorage.getItem('editarPeriodoIndex');
 
-    const valorSelecionado = selectTurmas.value;
-    const nomePeriodo = document.getElementById("nome").value.trim();
+  if (editarCursoIndex !== null && editarPeriodoIndex !== null) {
+    const cursoSelecionado = cursos[editarCursoIndex];
+    const periodoSelecionado = cursoSelecionado.periodos[editarPeriodoIndex];
 
-    if (!valorSelecionado || !nomePeriodo) {
-      alert("Preencha todos os campos obrigatórios.");
+    // Preencher os campos com os dados do período a ser editado
+    selectCurso.value = editarCursoIndex;
+    selectTurma.value = periodoSelecionado.turma;
+    inputNomePeriodo.value = periodoSelecionado.nome;
+
+    // Alterar o título para "Editar Período"
+    document.querySelector('h1').textContent = "Editar Período";
+
+    // Remover os itens do localStorage que indicam que estamos editando
+    localStorage.removeItem('editarCursoIndex');
+    localStorage.removeItem('editarPeriodoIndex');
+  }
+
+  // Lógica do formulário ao clicar em "Salvar"
+  const form = document.querySelector("form");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const cursoIndex = selectCurso.value;
+    const turmaSelecionada = selectTurma.value;
+    const nomePeriodo = inputNomePeriodo.value.trim();
+
+    if (!cursoIndex || !turmaSelecionada || !nomePeriodo) {
+      alert("Por favor, preencha todos os campos.");
       return;
     }
 
-    const [cursoSelecionado, anoSelecionado, turmaSelecionada] = valorSelecionado.split('|');
+    const cursoSelecionado = cursos[cursoIndex];
 
-    const novosDados = cursosSalvos.map(curso => {
-      if (curso.curso === cursoSelecionado && curso.ano === anoSelecionado) {
-        if (!curso.periodos) {
-          curso.periodos = [];
-        }
+    const novoPeriodo = {
+      nome: nomePeriodo,
+      turma: turmaSelecionada
+    };
 
-        curso.periodos.push({
-          nome: nomePeriodo,
-          turma: turmaSelecionada
-        });
+    if (editarCursoIndex !== null && editarPeriodoIndex !== null) {
+      // Se estamos editando, atualizamos o período
+      cursoSelecionado.periodos[editarPeriodoIndex] = novoPeriodo;
+    } else {
+      // Se estamos criando um novo, adicionamos o período
+      if (!cursoSelecionado.periodos) {
+        cursoSelecionado.periodos = [];
       }
-      return curso;
-    });
+      cursoSelecionado.periodos.push(novoPeriodo);
+    }
 
-    localStorage.setItem('controlePeriodos', JSON.stringify(novosDados));
+    // Atualizar o localStorage
+    localStorage.setItem("controlePeriodos", JSON.stringify(cursos));
+
     alert("Período salvo com sucesso!");
     window.location.href = "index.html";
   });
