@@ -1,4 +1,3 @@
-// Dados de exemplo para cursos
 const cursosExemplo = [
     {
       curso: "Informática",
@@ -17,7 +16,6 @@ const cursosExemplo = [
     }
   ];
   
-  // Dados de exemplo para turmas
   const turmasExemplo = [
     {
       nome: "Turma A",
@@ -33,7 +31,6 @@ const cursosExemplo = [
     }
   ];
   
-  // Salvar no localStorage
   localStorage.setItem('controlePeriodos', JSON.stringify(cursosExemplo));
   localStorage.setItem('turmas', JSON.stringify(turmasExemplo));
   
