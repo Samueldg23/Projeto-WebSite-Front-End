@@ -27,7 +27,7 @@ window.onload = function () {
           editarBtn.onclick = function () {
             localStorage.setItem('editarCursoIndex', cursoIndex);
             localStorage.setItem('editarPeriodoIndex', periodoIndex);
-            window.location.href = 'form-periodo.html';
+            window.location.href = 'formulario.html';
           };
   
           const excluirBtn = document.createElement('button');
